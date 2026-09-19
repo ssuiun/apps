@@ -1,0 +1,9 @@
+{
+  "name": "business-service-platform",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Static document tools prepared for Railway",
+  "scripts": {
+    "start": "node server.js"
+  }
+}

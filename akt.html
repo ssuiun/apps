@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Акт приёма-передачи документов</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Serif+SC:wght@600;700;900&display=swap" rel="stylesheet" />
+<script src="https://unpkg.com/pizzip@3.2.0/dist/pizzip.js" defer></script>
+<style>
+  :root{--bg:#1a0d0d;--bg2:#241313;--card:#2b1616;--card2:#341a1a;--border:#4a2222;--border2:#5c2a2a;--acc:#c8282a;--acc2:#d4af37;--acc3:#2e8b57;--txt:#f5e9d9;--txt2:#c9a98a;--muted:#9b7f6b;--r:14px;--rs:8px;--tr:.22s cubic-bezier(.4,0,.2,1);--hdr1:#200f0f;--hdr2:#2c1414;--glow:0 0 18px rgba(200,40,42,.35);--glow2:0 0 10px rgba(200,40,42,.4);--heading-font:'Noto Serif SC',serif}
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--txt);min-height:100vh;line-height:1.6}
+  header{background:linear-gradient(135deg,var(--hdr1),var(--hdr2));border-bottom:1px solid var(--border);padding:0 1.5rem;position:sticky;top:0;z-index:100;transition:background .3s ease}
+  .hdr{max-width:1440px;margin:0 auto;display:flex;align-items:center;gap:1rem;height:66px}
+  .logo{display:flex;align-items:center;gap:.7rem;font-weight:700;font-size:1.15rem}
+  .logo-i{width:38px;height:38px;background:linear-gradient(135deg,var(--acc),var(--acc2));border:1.5px solid var(--acc2);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:1.25rem;color:#f5e9d9;font-family:var(--heading-font);box-shadow:var(--glow2);transition:background var(--tr),box-shadow var(--tr)}
+  .logo-sub{font-size:.72rem;color:var(--txt2);font-weight:400;margin-top:1px}
+  main{max-width:1440px;margin:0 auto;padding:1.75rem}
+  .grid2{display:grid;grid-template-columns:1fr 460px;gap:1.5rem;align-items:start}
+  @media(max-width:1100px){.grid2{grid-template-columns:1fr}}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:1.35rem 1.5rem}
+  .mb{margin-bottom:1rem}
+  .ct{font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;color:var(--acc2);font-weight:700;margin-bottom:.9rem}
+  .fg{margin-bottom:.85rem}
+  .fg label{display:block;font-size:.78rem;color:var(--txt2);margin-bottom:.35rem}
+  .fg input[type=text]{width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:var(--rs);color:var(--txt);padding:.65rem .85rem;font-size:.92rem;font-family:inherit;transition:border-color var(--tr),box-shadow var(--tr)}
+  .fg input[type=text]:focus{outline:none;border-color:var(--acc2);box-shadow:0 0 0 3px rgba(212,175,55,.12)}
+  .fg2{display:grid;grid-template-columns:1fr 1fr;gap:.85rem}
+  .btn{border:none;border-radius:var(--rs);padding:.68rem 1.15rem;font-size:.86rem;font-weight:600;cursor:pointer;font-family:inherit;transition:transform 160ms cubic-bezier(.23,1,.32,1),box-shadow var(--tr),filter var(--tr),opacity var(--tr);display:inline-flex;align-items:center;gap:.45rem}
+  .btn:active{transform:scale(.97)}
+  .bp{background:linear-gradient(135deg,var(--acc),#8f1c1e);color:#fff;box-shadow:0 4px 16px rgba(200,40,42,.35)}
+  .bs{background:linear-gradient(135deg,var(--acc2),#a8842a);color:#241313}
+  .bg{background:var(--bg2);color:var(--txt2);border:1px solid var(--border2);transition:color var(--tr),border-color var(--tr)}
+  .bd{background:linear-gradient(135deg,#e8763a,#b8501f);color:#fff}
+  .bsm{padding:.38rem .85rem;font-size:.78rem}
+  @media (hover:hover) and (pointer:fine) {
+    /* Подъём + тень только там, где реально есть мышь — на тач-экране :hover залипает после тапа и не снимается до тапа в другое место. */
+    .bp:hover{filter:brightness(1.1);transform:translateY(-1px)}
+    .bs:hover{filter:brightness(1.08);transform:translateY(-1px)}
+    .bg:hover{color:var(--txt);border-color:var(--acc2)}
+  }
+  .bfull{width:100%;justify-content:center;padding:.85rem;font-size:.95rem}
+  .akt-actions{display:flex;gap:.6rem;flex-wrap:wrap;margin-bottom:1.1rem}
+  .akt-count{font-size:.8rem;color:var(--muted);margin-bottom:.75rem}
+  /* ITEMS TABLE — wide & pleasant */
+  .akt-table-wrap{border:1px solid var(--border);border-radius:var(--rs);overflow:hidden;margin-bottom:1.2rem}
+  .akt-table{width:100%;border-collapse:collapse}
+  .akt-table thead th{background:linear-gradient(135deg,var(--acc2),#a8842a);color:#241313;text-align:left;font-size:.74rem;text-transform:uppercase;letter-spacing:.04em;padding:.7rem .8rem;font-weight:700}
+  .akt-table tbody tr{border-top:1px solid var(--border)}
+  .akt-table tbody tr:nth-child(even){background:rgba(255,255,255,.02)}
+  .akt-table tbody tr:hover{background:rgba(212,175,55,.06)}
+  .akt-table td{padding:.5rem .6rem;vertical-align:middle}
+  .akt-table input[type=text],.akt-table select{width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:7px;color:var(--txt);padding:.55rem .7rem;font-size:.88rem;font-family:inherit;transition:border-color var(--tr)}
+  .akt-table input[type=text]:focus,.akt-table select:focus{outline:none;border-color:var(--acc2)}
+  .akt-num{width:44px;color:var(--muted);text-align:center;font-size:.86rem;font-weight:600}
+  .akt-pages{width:90px}
+  .akt-status{width:190px}
+  .akt-rm{width:34px;height:34px;background:var(--bg2);border:1px solid var(--border);border-radius:8px;cursor:pointer;color:var(--txt2);font-size:1.05rem;line-height:1;transition:color var(--tr),background var(--tr),border-color var(--tr)}
+  @media (hover:hover) and (pointer:fine) {
+    .akt-rm:hover{color:#fff;background:var(--acc);border-color:var(--acc)}
+  }
+  .akt-empty{padding:2.4rem 1rem;text-align:center;color:var(--muted);font-size:.88rem}
+  /* PREVIEW (paper look) */
+  .paper-outer{position:sticky;top:90px}
+  .paper-title{font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;color:var(--acc2);font-weight:700;margin-bottom:.7rem;display:flex;align-items:center;justify-content:space-between}
+  .paper{background:#fdf9f0;color:#20140f;border-radius:10px;padding:2rem 1.8rem;box-shadow:0 20px 50px rgba(0,0,0,.45);font-family:'Times New Roman',serif;min-height:340px}
+  .paper h2{text-align:center;font-size:1.05rem;letter-spacing:.02em;margin-bottom:.3rem;text-transform:uppercase}
+  .paper .co{text-align:center;font-weight:700;font-size:.98rem;margin-bottom:1rem}
+  .paper .dateline{display:flex;justify-content:space-between;font-size:.85rem;margin-bottom:.9rem}
+  .paper table{width:100%;border-collapse:collapse;font-size:.8rem;margin-bottom:1.3rem}
+  .paper th{background:#e4d6b2;border:1px solid #b8a26b;padding:.4rem .5rem;text-align:left}
+  .paper td{border:1px solid #c9bd9a;padding:.4rem .5rem}
+  .paper .sign{font-size:.85rem;font-weight:700;margin-top:.6rem}
+  .paper .empty{color:#8a7a5f;font-style:italic;text-align:center;padding:1.5rem 0;font-size:.85rem}
+  .toast{position:fixed;bottom:1.75rem;right:1.75rem;background:var(--card2);border:1px solid var(--border2);border-radius:var(--rs);padding:.8rem 1.15rem;font-size:.86rem;font-weight:500;z-index:300;transform:translateY(100%);opacity:0;transition:transform .28s cubic-bezier(.23,1,.32,1),opacity .28s cubic-bezier(.23,1,.32,1);max-width:340px;display:flex;align-items:center;gap:.65rem}
+  .toast.show{transform:translateY(0);opacity:1}
+  .toast.ok{border-color:rgba(46,139,87,.45)}
+  .toast.err{border-color:rgba(232,118,58,.45)}
+  .info-box{background:rgba(200,40,42,.1);border:1px solid rgba(200,40,42,.22);border-radius:var(--rs);padding:.75rem 1rem;font-size:.8rem;color:var(--txt2);margin-bottom:1rem;line-height:1.6}
+  .info-box strong{color:var(--acc)}
+  .conn-row{display:flex;align-items:center;gap:.5rem;font-size:.82rem;color:var(--txt2)}
+  .conn-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;background:var(--muted)}
+  .conn-dot.ok{background:var(--acc3);box-shadow:0 0 8px rgba(46,139,87,.6)}
+  .conn-dot.bad{background:#c0392b;box-shadow:0 0 8px rgba(192,57,43,.6)}
+  .gen-hint{font-size:.72rem;color:var(--muted);line-height:1.5}
+  .fg textarea{width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:var(--rs);color:var(--txt);padding:.65rem .85rem;font-size:.9rem;font-family:inherit;resize:vertical;min-height:64px;transition:border-color var(--tr),box-shadow var(--tr)}
+  .fg textarea:focus{outline:none;border-color:var(--acc2);box-shadow:0 0 0 3px rgba(212,175,55,.12)}
+  .vtable-wrap{overflow-x:auto}
+  table.vtable{width:100%;border-collapse:collapse;font-size:.82rem}
+  table.vtable th{text-align:left;color:var(--muted);font-weight:600;font-size:.72rem;text-transform:uppercase;letter-spacing:.05em;padding:.55rem .6rem;border-bottom:1px solid var(--border2);white-space:nowrap}
+  table.vtable td{padding:.6rem;border-bottom:1px solid var(--border);vertical-align:top}
+  table.vtable tr:hover td{background:rgba(255,255,255,.02)}
+  table.vtable td:last-child, table.vtable th:last-child{position:sticky;right:0;background:var(--card);box-shadow:-8px 0 10px -8px rgba(0,0,0,.45)}
+  table.vtable tr:hover td:last-child{background:var(--card2)}
+  table.vtable td:last-child{white-space:nowrap;min-width:96px}
+  .vempty{padding:1.2rem;text-align:center;color:var(--muted);font-size:.85rem}
+  .synced{color:var(--acc3);font-size:.72rem}
+  .notsynced{color:var(--muted);font-size:.72rem;cursor:pointer;text-decoration:underline}
+  ::-webkit-scrollbar{width:6px;height:6px}
+  ::-webkit-scrollbar-track{background:transparent}
+  ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+  /* SETTINGS MODAL */
+  .btn-settings{margin-left:auto;flex-shrink:0;padding:.42rem .55rem;font-size:1rem}
+  .mov{position:fixed;inset:0;background:rgba(0,0,0,.72);backdrop-filter:blur(8px);z-index:200;display:flex;align-items:center;justify-content:center;padding:1rem;opacity:0;pointer-events:none;transition:opacity .24s cubic-bezier(.23,1,.32,1)}
+  .mov.open{opacity:1;pointer-events:all}
+  .modal{background:var(--card);border:1px solid var(--border2);border-radius:18px;padding:1.85rem;width:100%;max-width:460px;max-height:90vh;overflow-y:auto;box-shadow:0 20px 70px rgba(0,0,0,.65);transform:scale(.95) translateY(10px);transition:transform .24s cubic-bezier(.23,1,.32,1)}
+  .mov.open .modal{transform:scale(1) translateY(0)}
+  .mhdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.35rem}
+  .mhdr h2{font-size:1.15rem;font-weight:700}
+  .mcl{width:30px;height:30px;background:var(--bg2);border:1px solid var(--border);border-radius:7px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1.1rem;color:var(--txt2);transition:color var(--tr)}
+  .mcl:hover{color:var(--txt)}
+  .mact{display:flex;gap:.65rem;justify-content:flex-end;margin-top:1.35rem}
+  .theme-grid{display:grid;grid-template-columns:1fr 1fr;gap:.65rem;margin-top:.5rem}
+  .theme-opt{display:flex;align-items:center;gap:.6rem;padding:.7rem .85rem;border:1px solid var(--border);border-radius:var(--rs);cursor:pointer;transition:border-color var(--tr),background var(--tr),color var(--tr);font-size:.83rem;color:var(--txt2)}
+  .theme-opt:hover{border-color:var(--border2);color:var(--txt)}
+  .theme-opt.sel{border-color:var(--acc);background:rgba(200,40,42,.1);color:var(--txt)}
+  .theme-sw{width:26px;height:26px;border-radius:50%;flex-shrink:0;border:2px solid rgba(255,255,255,.25)}
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; }
+    .card, .btn, .bg, .theme-opt, .fg input, .akt-table input, .akt-table select, .akt-rm, .logo-i {
+      transition-property: opacity, color, background-color, border-color !important;
+    }
+    .bp:hover, .bs:hover, .bg:hover, .akt-rm:hover, .btn:active { transform: none !important; }
+    .mov, .modal, .toast { transition-duration: .12s !important; }
+  }
+</style>
+</head>
+<body>
+<header id="app-header">
+  <div class="hdr">
+    <div class="logo-i" id="logo-icon">印</div>
+    <div>
+      <div class="logo">Акт приёма-передачи</div>
+      <div class="logo-sub">Генератор актов приёма-передачи документов</div>
+    </div>
+    <button class="btn bg btn-settings" id="btn-settings" onclick="openSettings()" title="Настройки оформления">⚙️</button>
+  </div>
+</header>
+
+<main>
+  <div class="grid2">
+    <div>
+      <div class="card mb">
+        <div class="ct">Данные акта</div>
+        <div class="fg"><label for="co-name">Компания / организация</label><input id="co-name" type="text" placeholder="ОсОО «Баргы и Ко»" oninput="upPreview()" /></div>
+        <div class="fg2">
+          <div class="fg"><label for="from-name">Передал (ФИО)</label><input id="from-name" type="text" placeholder="Алмазова Н.А." oninput="upPreview()" /></div>
+          <div class="fg"><label for="to-name">Принял (ФИО)</label><input id="to-name" type="text" placeholder="Иванов И.И." oninput="upPreview()" /></div>
+        </div>
+        <div class="fg" style="max-width:220px"><label for="akt-date">Дата</label><input id="akt-date" type="text" placeholder="12.08.2026" oninput="upPreview()" /></div>
+      </div>
+
+      <div class="card">
+        <div class="ct">Список документов</div>
+        <div class="akt-actions">
+          <button class="btn bs" type="button" onclick="loadStandard()">📋 Загрузить полный список (33 п.)</button>
+          <button class="btn bg" type="button" onclick="addRow()">+ Добавить строку</button>
+          <button class="btn bg" type="button" onclick="clearItems()">🗑 Очистить список</button>
+        </div>
+        <div class="akt-count" id="items-count">0 документов</div>
+        <div class="akt-table-wrap">
+          <table class="akt-table">
+            <thead>
+              <tr><th style="width:44px">№</th><th>Наименование документа</th><th style="width:90px">Листов</th><th style="width:190px">Статус</th><th style="width:40px"></th></tr>
+            </thead>
+            <tbody id="items-body"></tbody>
+          </table>
+        </div>
+        <div style="display:flex;gap:.6rem">
+          <button class="btn bp" style="flex:1;justify-content:center;padding:.85rem;font-size:.95rem" onclick="generateDocx('ru')">⬇️ Скачать (RU) .docx</button>
+          <button class="btn bg" style="flex:1;justify-content:center;padding:.85rem;font-size:.95rem;border-color:var(--acc2);color:var(--acc2)" onclick="generateDocx('zh')">中 Скачать на китайском (.docx)</button>
+        </div>
+        <div style="font-size:.72rem;color:var(--muted);margin-top:.5rem">В китайской версии переводятся названия документов, статус и подписи. Название компании и ФИО остаются как введены.</div>
+      </div>
+
+      <div class="card" id="sheet-card">
+        <div class="ct">📊 Запись в Google Таблицу (лист «Акт»)</div>
+        <div class="info-box">Отправляет краткую запись об акте в ту же Google Таблицу, что используется для учёта виз — на лист <strong>«Акт»</strong>. Вставьте тот же URL веб-приложения Apps Script и токен, что указаны в разделе «Визы».</div>
+        <div class="fg"><label for="akt-hook">URL веб-приложения Apps Script</label><input id="akt-hook" type="text" placeholder="https://script.google.com/macros/s/.../exec" oninput="saveAktHook()" /></div>
+        <div class="fg"><label for="akt-secret">Секретный токен (опционально)</label><input id="akt-secret" type="password" placeholder="тот же, что и в разделе «Визы»" oninput="saveAktHook()" /></div>
+        <div class="conn-row mb"><div class="conn-dot" id="akt-conn-dot"></div><span id="akt-conn-txt">Соединение не проверено</span></div>
+        <button class="btn bg mb" type="button" onclick="testAktHook()">🔌 Проверить соединение</button>
+
+        <div class="fg"><label for="akt-what">Что передаётся</label><textarea id="akt-what" placeholder="Например: полный пакет учредительных документов (33 позиции)"></textarea></div>
+        <div class="fg"><label for="akt-comment">Комментарий</label><textarea id="akt-comment" placeholder="Необязательно"></textarea></div>
+        <div class="gen-hint mb">Компания, «Передал», «Принял» и дата берутся из полей формы выше — заполните их перед отправкой.</div>
+        <div style="display:flex;gap:.6rem">
+          <button class="btn bp bfull" type="button" id="akt-submit-btn" onclick="submitAktRecord()">📤 Отправить запись в Google Таблицу</button>
+          <button class="btn bg" type="button" id="akt-cancel-btn" onclick="cancelEditAkt()" style="display:none">✕ Отмена</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="paper-outer">
+      <div class="paper-title"><span>Предпросмотр</span></div>
+      <div class="paper" id="preview"></div>
+    </div>
+  </div>
+
+  <div class="card" id="akt-records-card" style="margin-top:1.5rem">
+    <div class="ct">📋 Отправленные записи (лист «Акт»)</div>
+    <div class="akt-count" id="akt-records-count">0 записей</div>
+    <div class="vtable-wrap">
+      <table class="vtable" id="akt-table">
+        <thead></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+</main>
+
+<!-- ══ SETTINGS MODAL ══ -->
+<div class="mov" id="settingsOv" onclick="clickOvS(event)">
+  <div class="modal">
+    <div class="mhdr">
+      <h2>⚙️ Настройки оформления</h2>
+      <div class="mcl" onclick="closeSettings()">✕</div>
+    </div>
+    <div class="fg">
+      <label>Цветовая тема приложения</label>
+      <div class="theme-grid" id="theme-grid"></div>
+    </div>
+    <div class="fg">
+      <label>Стиль оформления (иконка и шрифт заголовков)</label>
+      <div class="theme-grid" id="style-grid"></div>
+    </div>
+    <div class="mact">
+      <button type="button" class="btn bg" onclick="closeSettings()">Готово</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"><span id="ti"></span><span id="tm"></span></div>
+
+<script>
+/* ═══ СТАНДАРТНЫЙ СПИСОК ДОКУМЕНТОВ (33 пункта) ═══ */
+const STANDARD_ITEMS = [
+  ["Устав","8","оригинал"],
+  ["Учредительный договор","8","оригинал"],
+  ["Свидетельство","1","оригинал"],
+  ["Решение о регистрации компании","1","оригинал"],
+  ["Выписка с министерства юстиции","1","оригинал"],
+  ["Приказ о создании компании","1","оригинал"],
+  ["Регистрационная карта налогоплательщика","1","оригинал"],
+  ["ПИН","1","оригинал"],
+  ["Виза","1","оригинал"],
+  ["Регистрация по прибытию","1","оригинал"],
+  ["Перевод паспорта нотариально заверенный","1","оригинал"],
+  ["Печать","1","оригинал"],
+  ["Договор с банком","1","оригинал"],
+  ["Квитанция","1","оригинал"],
+  ["Реквизиты компании","1","оригинал"],
+  ["Генеральная доверенность","1","оригинал"],
+  ["Лицензия","1","оригинал"],
+  ["Договор дарения доли (купли-продажи)","1","оригинал"],
+  ["Исходящие письма","",""],
+  ["Входящие письма","",""],
+  ["Декларация (ГДТ) №","",""],
+  ["Инвойс","",""],
+  ["Договор ..........","",""],
+  ["Технический паспорт","",""],
+  ["Акт установления границ","",""],
+  ["Кадастровый план","",""],
+  ["Государственный акт (красная книга)","",""],
+  ["Страховой полис","",""],
+  ["Свидетельство о регистрации права на добычу песчано-гравийной смеси и суглинков","",""],
+  ["Рекультивационный счёт","",""],
+  ["Приказ .....","",""],
+  ["Свидетельство на товарный знак","",""],
+  ["Разрешение на товарный знак","",""]
+];
+
+/* Китайский перевод наименований — по индексу, параллельно STANDARD_ITEMS */
+const STANDARD_ITEMS_ZH = [
+  "章程","设立协议","证书","公司注册决定书","司法部摘录","公司设立令",
+  "纳税人注册卡","纳税人识别号（PIN）","签证","入境登记","经公证的护照翻译件","公章",
+  "银行合同","收据","公司基本信息","总委托书","许可证","股权转让（买卖）合同",
+  "发文信函","收文信函","报关单（ГДТ）№","发票","合同..........","技术产权证",
+  "界址确定书","地籍图","国家土地证（红皮书）","保险单","砂砾与黏土开采权登记证书",
+  "复垦账户","令.....","商标证书","商标许可证"
+];
+const STATUS_ZH = { 'оригинал':'原件', 'копия':'复印件', 'заверенная копия':'公证复印件', '':'' };
+const LABELS_ZH = {
+  title: '文件交接确认书',
+  city: '比什凯克市',
+  colNum: '序号', colName: '文件名称', colPages: '页数', colStatus: '状态',
+  passedBy: '移交人：', receivedBy: '接收人：'
+};
+function translateItemName(name) {
+  const idx = STANDARD_ITEMS.findIndex(it => it[0] === name);
+  return idx !== -1 ? STANDARD_ITEMS_ZH[idx] : name;
+}
+function translateStatus(s) {
+  return Object.prototype.hasOwnProperty.call(STATUS_ZH, s) ? STATUS_ZH[s] : s;
+}
+
+/* ═══════ ТЕМЫ ОФОРМЛЕНИЯ ═══════ */
+const THEMES = {
+  red: {name:'Красно-золотой (по умолчанию)', vars:{'--bg':'#1a0d0d','--bg2':'#241313','--card':'#2b1616','--card2':'#341a1a','--border':'#4a2222','--border2':'#5c2a2a','--acc':'#c8282a','--acc2':'#d4af37','--acc3':'#2e8b57','--txt':'#f5e9d9','--txt2':'#c9a98a','--muted':'#9b7f6b','--hdr1':'#200f0f','--hdr2':'#2c1414','--glow':'0 0 18px rgba(200,40,42,.35)','--glow2':'0 0 10px rgba(200,40,42,.4)'}},
+  blue: {name:'Тёмно-синий', vars:{'--bg':'#0d1420','--bg2':'#13202f','--card':'#16283a','--card2':'#1a3245','--border':'#22415c','--border2':'#2b5170','--acc':'#2a7fc8','--acc2':'#d4af37','--acc3':'#2e8b57','--txt':'#e9f0f5','--txt2':'#a9c0c9','--muted':'#77939e','--hdr1':'#0a121c','--hdr2':'#0f1c2a','--glow':'0 0 18px rgba(42,127,200,.35)','--glow2':'0 0 10px rgba(42,127,200,.4)'}},
+  green: {name:'Изумрудный', vars:{'--bg':'#0d1a12','--bg2':'#13241a','--card':'#162b1e','--card2':'#1a3524','--border':'#224a30','--border2':'#2b5c3c','--acc':'#2e8b57','--acc2':'#d4af37','--acc3':'#3498db','--txt':'#e9f5ee','--txt2':'#a9c9b3','--muted':'#6f977f','--hdr1':'#0a140f','--hdr2':'#0f1e16','--glow':'0 0 18px rgba(46,139,87,.35)','--glow2':'0 0 10px rgba(46,139,87,.4)'}},
+  purple: {name:'Фиолетовый', vars:{'--bg':'#160d20','--bg2':'#20132f','--card':'#28163a','--card2':'#331a45','--border':'#48225c','--border2':'#5a2b70','--acc':'#8e3fc8','--acc2':'#d4af37','--acc3':'#2e8b57','--txt':'#f0e9f5','--txt2':'#c0a9c9','--muted':'#987ea2','--hdr1':'#120a1a','--hdr2':'#1a1128','--glow':'0 0 18px rgba(142,63,200,.35)','--glow2':'0 0 10px rgba(142,63,200,.4)'}},
+  slate: {name:'Графитовый', vars:{'--bg':'#15171a','--bg2':'#1d2024','--card':'#22262b','--card2':'#282d33','--border':'#383e46','--border2':'#454c56','--acc':'#5c7cfa','--acc2':'#d4af37','--acc3':'#2e8b57','--txt':'#eceef0','--txt2':'#a9b1bb','--muted':'#878e98','--hdr1':'#111317','--hdr2':'#181b1f','--glow':'0 0 18px rgba(92,124,250,.35)','--glow2':'0 0 10px rgba(92,124,250,.4)'}},
+  light: {name:'Светлая', vars:{'--bg':'#f5f2ec','--bg2':'#ffffff','--card':'#ffffff','--card2':'#f0ece2','--border':'#ddd3c2','--border2':'#c9bba0','--acc':'#c8282a','--acc2':'#a8862a','--acc3':'#2e8b57','--txt':'#2b1a1a','--txt2':'#5c4530','--muted':'#82735b','--hdr1':'#ffffff','--hdr2':'#f2ece0','--glow':'0 0 12px rgba(200,40,42,.25)','--glow2':'0 0 8px rgba(200,40,42,.3)'}}
+};
+/* ═══════ СТИЛЬ ОФОРМЛЕНИЯ (иконка логотипа и шрифт заголовков) ═══════ */
+const STYLES = {
+  cn: {name:'🈲 Китайский стиль (по умолчанию)', icon:'印', font:"'Noto Serif SC',serif"},
+  kg: {name:'☀️ Кыргызский стиль', icon:'☼', font:"'Inter',sans-serif"}
+};
+let currentStyle = 'cn';
+function applyStyle(key, save) {
+  const s = STYLES[key];
+  if (!s) return;
+  document.documentElement.style.setProperty('--heading-font', s.font);
+  const icon = document.getElementById('logo-icon');
+  if (icon) icon.textContent = s.icon;
+  currentStyle = key;
+  if (save !== false) localStorage.setItem('akt_style', key);
+  renderStyleGrid();
+}
+function loadStyle() {
+  const saved = localStorage.getItem('akt_style');
+  applyStyle((saved && STYLES[saved]) ? saved : 'cn', false);
+}
+function renderStyleGrid() {
+  const g = document.getElementById('style-grid');
+  if (!g) return;
+  g.innerHTML = Object.entries(STYLES).map(([k,s]) => `
+    <div class="theme-opt ${k===currentStyle?'sel':''}" onclick="applyStyle('${k}')">
+      <div class="theme-sw" style="background:var(--card2);display:flex;align-items:center;justify-content:center;font-family:${s.font};font-size:1.15rem;color:var(--acc2)">${s.icon}</div>
+      <span>${s.name}</span>
+    </div>`).join('');
+}
+let currentTheme = 'red';
+function applyTheme(key, save) {
+  const t = THEMES[key];
+  if (!t) return;
+  const root = document.documentElement.style;
+  Object.entries(t.vars).forEach(([k,v]) => root.setProperty(k, v));
+  currentTheme = key;
+  if (save !== false) localStorage.setItem('akt_theme', key);
+  renderThemeGrid();
+}
+function loadTheme() {
+  const saved = localStorage.getItem('akt_theme');
+  applyTheme((saved && THEMES[saved]) ? saved : 'red', false);
+}
+function renderThemeGrid() {
+  const g = document.getElementById('theme-grid');
+  if (!g) return;
+  g.innerHTML = Object.entries(THEMES).map(([k,t]) => `
+    <div class="theme-opt ${k===currentTheme?'sel':''}" onclick="applyTheme('${k}')">
+      <div class="theme-sw" style="background:linear-gradient(135deg, ${t.vars['--acc']}, ${t.vars['--acc2']})"></div>
+      <span>${t.name}</span>
+    </div>`).join('');
+}
+function openSettings() { renderThemeGrid(); renderStyleGrid(); document.getElementById('settingsOv').classList.add('open'); document.body.style.overflow='hidden'; }
+function closeSettings() { document.getElementById('settingsOv').classList.remove('open'); document.body.style.overflow=''; }
+function clickOvS(e) { if (e.target === document.getElementById('settingsOv')) closeSettings(); }
+loadTheme();
+loadStyle();
+
+let ITEMS = [];
+let SEQ = 0;
+
+/* ═══ АВТОСОХРАНЕНИЕ СПИСКА В localStorage ═══ */
+function saveItems() {
+  try { localStorage.setItem('akt_items', JSON.stringify(ITEMS)); } catch(e) {}
+}
+function loadItemsFromStorage() {
+  try {
+    const s = localStorage.getItem('akt_items');
+    if (s) {
+      const arr = JSON.parse(s);
+      if (Array.isArray(arr)) {
+        ITEMS = arr;
+        SEQ = ITEMS.reduce((m,r) => Math.max(m, r.id||0), 0);
+      }
+    }
+  } catch(e) {}
+}
+function saveHeaderFields() {
+  try {
+    localStorage.setItem('akt_header', JSON.stringify({
+      co: document.getElementById('co-name').value,
+      from: document.getElementById('from-name').value,
+      to: document.getElementById('to-name').value,
+      date: document.getElementById('akt-date').value
+    }));
+  } catch(e) {}
+}
+function loadHeaderFields() {
+  try {
+    const s = localStorage.getItem('akt_header');
+    if (s) {
+      const h = JSON.parse(s);
+      if (h.co) document.getElementById('co-name').value = h.co;
+      if (h.from) document.getElementById('from-name').value = h.from;
+      if (h.to) document.getElementById('to-name').value = h.to;
+      if (h.date) document.getElementById('akt-date').value = h.date;
+    }
+  } catch(e) {}
+}
+
+function today() {
+  const d = new Date();
+  return pad(d.getDate())+'.'+pad(d.getMonth()+1)+'.'+d.getFullYear();
+}
+function pad(n){ return String(n).padStart(2,'0'); }
+function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
+function statusWord(n){
+  const n10=n%10, n100=n%100;
+  if (n100>=11 && n100<=14) return 'документов';
+  if (n10===1) return 'документ';
+  if (n10>=2 && n10<=4) return 'документа';
+  return 'документов';
+}
+
+function rowHtml(row, pos) {
+  const statuses = ['оригинал','копия','заверенная копия',''];
+  const opts = statuses.map(s => `<option value="${esc(s)}" ${row.status===s?'selected':''}>${s?esc(s):'—'}</option>`).join('');
+  return `<tr data-id="${row.id}">
+    <td class="akt-num">${pos}</td>
+    <td><input type="text" value="${esc(row.name)}" placeholder="Наименование документа" oninput="updateItem(${row.id},'name',this.value)"></td>
+    <td class="akt-pages"><input type="text" value="${esc(row.pages)}" placeholder="—" oninput="updateItem(${row.id},'pages',this.value)"></td>
+    <td class="akt-status"><select onchange="updateItem(${row.id},'status',this.value)">${opts}</select></td>
+    <td><button type="button" class="akt-rm" title="Удалить" onclick="removeRow(${row.id})">×</button></td>
+  </tr>`;
+}
+
+function renderItems() {
+  const tbody = document.getElementById('items-body');
+  if (!ITEMS.length) {
+    tbody.innerHTML = `<tr><td colspan="5"><div class="akt-empty">Список пуст — нажмите «Загрузить полный список» или «Добавить строку»</div></td></tr>`;
+  } else {
+    tbody.innerHTML = ITEMS.map((r,i) => rowHtml(r, i+1)).join('');
+  }
+  document.getElementById('items-count').textContent = ITEMS.length + ' ' + statusWord(ITEMS.length);
+  upPreview();
+  saveItems();
+}
+function updateItem(id, field, value) {
+  const row = ITEMS.find(r => r.id===id);
+  if (row) { row[field] = value; upPreview(); saveItems(); }
+}
+function addRow(name, pages, status) {
+  ITEMS.push({ id: ++SEQ, name: name||'', pages: pages||'', status: status||'оригинал' });
+  renderItems();
+}
+function removeRow(id) {
+  ITEMS = ITEMS.filter(r => r.id!==id);
+  renderItems();
+}
+function clearItems() {
+  if (ITEMS.length && !confirm('Очистить весь список документов?')) return;
+  ITEMS = [];
+  renderItems();
+}
+function loadStandard() {
+  ITEMS = STANDARD_ITEMS.map(([name,pages,status]) => ({ id: ++SEQ, name, pages, status }));
+  renderItems();
+  toast('Загружен полный список из ' + STANDARD_ITEMS.length + ' документов', 'ok');
+}
+
+function getCtx() {
+  return {
+    company_name: document.getElementById('co-name').value.trim(),
+    passed_by: document.getElementById('from-name').value.trim(),
+    received_by: document.getElementById('to-name').value.trim(),
+    date: document.getElementById('akt-date').value.trim() || today(),
+    items: ITEMS.map(r => ({ name: r.name, pages: r.pages, status: r.status }))
+  };
+}
+
+function upPreview() {
+  const x = getCtx();
+  const rows = x.items.map((it,i) => `<tr><td>${i+1}</td><td>${esc(it.name)||'—'}</td><td>${esc(it.pages)||'—'}</td><td>${esc(it.status)||'—'}</td></tr>`).join('');
+  const tableHtml = x.items.length
+    ? `<table><thead><tr><th>№</th><th>Наименование документа</th><th>Листов</th><th>Статус</th></tr></thead><tbody>${rows}</tbody></table>`
+    : `<div class="empty">Список документов пуст</div>`;
+  document.getElementById('preview').innerHTML = `
+    <h2>Акт приёма-передачи документов</h2>
+    <div class="co">${esc(x.company_name) || '[Компания не указана]'}</div>
+    <div class="dateline"><span>г. Бишкек</span><span>«${esc(x.date)}»</span></div>
+    ${tableHtml}
+    <div class="sign">Передал: ${esc(x.passed_by) || '[не указано]'} _____________ «${esc(x.date)}»</div>
+    <div class="sign">Принял: ${esc(x.received_by) || '[не указано]'} _____________ «${esc(x.date)}»</div>
+  `;
+  saveHeaderFields();
+}
+
+/* ═══ ГЕНЕРАЦИЯ .DOCX НАПРЯМУЮ (без загружаемого шаблона) ═══ */
+function escXml(s) {
+  return String(s == null ? '' : s)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;').replace(/'/g, '&apos;');
+}
+function pPr(align) { return align ? `<w:pPr><w:jc w:val="${align}"/></w:pPr>` : ''; }
+function xRun(text, opts) {
+  opts = opts || {};
+  const rpr = [];
+  if (opts.bold) rpr.push('<w:b/>');
+  if (opts.zh) rpr.push('<w:rFonts w:ascii="Noto Serif SC" w:hAnsi="Noto Serif SC" w:eastAsia="SimSun" w:cs="SimSun"/>');
+  rpr.push(`<w:sz w:val="${opts.size || 20}"/>`);
+  rpr.push(`<w:szCs w:val="${opts.size || 20}"/>`);
+  const rprXml = `<w:rPr>${rpr.join('')}</w:rPr>`;
+  return `<w:r>${rprXml}<w:t xml:space="preserve">${escXml(text)}</w:t></w:r>`;
+}
+function xPara(text, opts) { opts = opts || {}; return `<w:p>${pPr(opts.align)}${xRun(text, opts)}</w:p>`; }
+function xEmpty() { return '<w:p/>'; }
+function xCell(text, opts) {
+  opts = opts || {};
+  const width = opts.width || 1000;
+  const shd = opts.shade ? `<w:shd w:val="clear" w:color="auto" w:fill="${opts.shade}"/>` : '';
+  return `<w:tc><w:tcPr><w:tcW w:w="${width}" w:type="dxa"/>${shd}<w:vAlign w:val="center"/></w:tcPr>${xPara(text, opts)}</w:tc>`;
+}
+function xRow(cells) { return `<w:tr>${cells.join('')}</w:tr>`; }
+
+const COL = { num: 650, name: 6100, pages: 1500, status: 1950 };
+const TABLE_W = COL.num + COL.name + COL.pages + COL.status;
+
+function buildDocumentXml(data, lang) {
+  const zh = lang === 'zh';
+  const items = data.items || [];
+  const t = zh
+    ? { title: LABELS_ZH.title, city: LABELS_ZH.city, colNum: LABELS_ZH.colNum, colName: LABELS_ZH.colName, colPages: LABELS_ZH.colPages, colStatus: LABELS_ZH.colStatus, passedBy: LABELS_ZH.passedBy, receivedBy: LABELS_ZH.receivedBy }
+    : { title: 'АКТ ПРИЁМА-ПЕРЕДАЧИ ДОКУМЕНТОВ', city: 'г. Бишкек', colNum: '№', colName: 'Наименование документа', colPages: 'Кол-во листов', colStatus: 'Статус', passedBy: 'Передал: ', receivedBy: 'Принял: ' };
+  const zo = zh ? { zh: true } : {};
+  const headerRow = xRow([
+    xCell(t.colNum, { width: COL.num, bold: true, align: 'center', shade: 'D9C9A3', ...zo }),
+    xCell(t.colName, { width: COL.name, bold: true, shade: 'D9C9A3', ...zo }),
+    xCell(t.colPages, { width: COL.pages, bold: true, align: 'center', shade: 'D9C9A3', ...zo }),
+    xCell(t.colStatus, { width: COL.status, bold: true, align: 'center', shade: 'D9C9A3', ...zo })
+  ]);
+  const itemRows = items.map((it,i) => xRow([
+    xCell(String(i+1), { width: COL.num, align: 'center' }),
+    xCell(zh ? translateItemName(it.name || '') : (it.name || ''), { width: COL.name, ...zo }),
+    xCell(it.pages || '', { width: COL.pages, align: 'center' }),
+    xCell(zh ? translateStatus(it.status || '') : (it.status || ''), { width: COL.status, align: 'center', ...zo })
+  ])).join('');
+
+  const tableXml = `<w:tbl>
+    <w:tblPr>
+      <w:tblW w:w="${TABLE_W}" w:type="dxa"/>
+      <w:tblBorders>
+        <w:top w:val="single" w:sz="6" w:space="0" w:color="999999"/>
+        <w:left w:val="single" w:sz="6" w:space="0" w:color="999999"/>
+        <w:bottom w:val="single" w:sz="6" w:space="0" w:color="999999"/>
+        <w:right w:val="single" w:sz="6" w:space="0" w:color="999999"/>
+        <w:insideH w:val="single" w:sz="4" w:space="0" w:color="999999"/>
+        <w:insideV w:val="single" w:sz="4" w:space="0" w:color="999999"/>
+      </w:tblBorders>
+      <w:tblLayout w:type="fixed"/>
+      <w:tblLook w:val="04A0" w:firstRow="1" w:lastRow="0" w:firstColumn="1" w:lastColumn="0" w:noHBand="0" w:noVBand="1"/>
+    </w:tblPr>
+    <w:tblGrid>
+      <w:gridCol w:w="${COL.num}"/><w:gridCol w:w="${COL.name}"/><w:gridCol w:w="${COL.pages}"/><w:gridCol w:w="${COL.status}"/>
+    </w:tblGrid>
+    ${headerRow}${itemRows}
+  </w:tbl>`;
+
+  const dateLine = `<w:p><w:pPr><w:tabs><w:tab w:val="right" w:pos="9350"/></w:tabs></w:pPr>${xRun(t.city,{size:20, ...zo})}<w:r><w:tab/></w:r>${xRun('«'+data.date+'»',{size:20})}</w:p>`;
+
+  const body = [
+    xPara(t.title, { align: 'center', bold: true, size: 30, ...zo }),
+    xPara(data.company_name || '', { align: 'center', bold: true, size: 24 }),
+    xEmpty(),
+    dateLine,
+    xEmpty(),
+    tableXml,
+    xEmpty(), xEmpty(),
+    xPara(`${t.passedBy}${data.passed_by}   _______________________   «${data.date}»`, { bold: true, size: 22, ...zo }),
+    xEmpty(),
+    xPara(`${t.receivedBy}${data.received_by}   _______________________   «${data.date}»`, { bold: true, size: 22, ...zo })
+  ].join('');
+
+  return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
+  <w:body>${body}<w:sectPr><w:pgSz w:w="11906" w:h="16838"/><w:pgMar w:top="1000" w:right="850" w:bottom="1000" w:left="850" w:header="708" w:footer="708" w:gutter="0"/></w:sectPr></w:body>
+</w:document>`;
+}
+
+const CONTENT_TYPES_XML = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">
+  <Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>
+  <Default Extension="xml" ContentType="application/xml"/>
+  <Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/>
+</Types>`;
+const RELS_XML = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+  <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/>
+</Relationships>`;
+const DOC_RELS_XML = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"></Relationships>`;
+
+function generateDocx(lang) {
+  lang = lang || 'ru';
+  if (!ITEMS.length) { toast('Добавьте хотя бы один документ в список', 'err'); return; }
+  if (typeof window.PizZip !== 'function') { toast('Библиотека PizZip не загрузилась. Проверьте интернет-соединение и обновите страницу (F5).', 'err'); return; }
+  const x = getCtx();
+  try {
+    const zip = new PizZip();
+    zip.file('[Content_Types].xml', CONTENT_TYPES_XML);
+    zip.file('_rels/.rels', RELS_XML);
+    zip.file('word/_rels/document.xml.rels', DOC_RELS_XML);
+    zip.file('word/document.xml', buildDocumentXml(x, lang));
+    const blob = zip.generate({ type: 'blob', mimeType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
+    const suffix = lang === 'zh' ? '_CN' : '';
+    const name = 'Акт_приема_передачи_' + (x.company_name||'документ').replace(/[^a-zA-Zа-яА-Я0-9]/g,'_').slice(0,40) + suffix + '.docx';
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = name; a.click();
+    setTimeout(() => URL.revokeObjectURL(url), 3000);
+    toast('Файл скачан: ' + name, 'ok');
+  } catch(e) {
+    console.error(e);
+    toast('Ошибка генерации: ' + (e.message||e), 'err');
+  }
+}
+
+function toast(msg, type) {
+  type = type || 'ok';
+  const t = document.getElementById('toast');
+  document.getElementById('ti').textContent = type==='ok' ? '✅' : '❌';
+  document.getElementById('tm').textContent = msg;
+  t.className = 'toast ' + type + ' show';
+  setTimeout(() => t.classList.remove('show'), 3500);
+}
+
+/* ═══ GOOGLE SHEETS SYNC (лист «Акт», тот же мост Apps Script, что и в разделе «Визы») ═══ */
+function saveAktHook() {
+  localStorage.setItem('akt_hook', document.getElementById('akt-hook').value.trim());
+  localStorage.setItem('akt_secret', document.getElementById('akt-secret').value.trim());
+  updateAktConnDot('unknown');
+}
+function loadAktHook() {
+  const hook = localStorage.getItem('akt_hook') || localStorage.getItem('vd_hook') || '';
+  const secret = localStorage.getItem('akt_secret') || localStorage.getItem('vd_secret') || '';
+  document.getElementById('akt-hook').value = hook;
+  document.getElementById('akt-secret').value = secret;
+  updateAktConnDot(hook ? null : 'unknown');
+}
+function updateAktConnDot(state) {
+  const dot = document.getElementById('akt-conn-dot');
+  const txt = document.getElementById('akt-conn-txt');
+  if (!dot || !txt) return;
+  dot.className = 'conn-dot';
+  if (state === 'ok') { dot.classList.add('ok'); txt.textContent = 'Подключено'; }
+  else if (state === 'bad') { dot.classList.add('bad'); txt.textContent = 'Не удалось подключиться'; }
+  else { txt.textContent = 'Соединение не проверено'; }
+}
+async function testAktHook() {
+  const url = (document.getElementById('akt-hook').value || '').trim();
+  const secret = (document.getElementById('akt-secret').value || '').trim();
+  if (!url) { toast('Вставьте сначала URL веб-приложения', 'err'); return; }
+  try {
+    const res = await fetch(url + (secret ? (url.includes('?') ? '&' : '?') + 'secret=' + encodeURIComponent(secret) : ''), { method: 'GET' });
+    const data = await res.json().catch(() => null);
+    if (res.ok && data && data.ok) {
+      updateAktConnDot('ok');
+      toast('Соединение с таблицей установлено', 'ok');
+    } else {
+      updateAktConnDot('bad');
+      toast('Мост ответил, но неожиданно. Проверьте деплой скрипта.', 'err');
+    }
+  } catch(e) {
+    updateAktConnDot('bad');
+    toast('Не удалось связаться с веб-приложением. Проверьте URL и деплой.', 'err');
+  }
+}
+/* ═══ СПИСОК ОТПРАВЛЕННЫХ ЗАПИСЕЙ (аналог списка «Визы») ═══ */
+let AKT_DB = [];
+let editingAktId = null;
+
+function loadAktDB() {
+  const s = localStorage.getItem('akt_records');
+  if (s) { try { AKT_DB = JSON.parse(s); return; } catch(e) {} }
+  AKT_DB = [];
+}
+function saveAktDB() {
+  try { localStorage.setItem('akt_records', JSON.stringify(AKT_DB)); } catch(e) {}
+}
+
+function submitAktRecord() {
+  const company = document.getElementById('co-name').value.trim();
+  const from = document.getElementById('from-name').value.trim();
+  const to = document.getElementById('to-name').value.trim();
+  const date = document.getElementById('akt-date').value.trim() || today();
+  const what = document.getElementById('akt-what').value.trim();
+  const comment = document.getElementById('akt-comment').value.trim();
+
+  if (!company || !from || !to) { toast('Заполните компанию, «Передал» и «Принял» в форме выше', 'err'); return; }
+
+  if (editingAktId) {
+    const rec = AKT_DB.find(x => x.id === editingAktId);
+    if (!rec) { cancelEditAkt(); return; }
+    Object.assign(rec, { company, from, to, date, what, comment, synced: false });
+    saveAktDB();
+    renderAktRecords();
+    toast('Запись обновлена', 'ok');
+    syncAktRecord(rec.id);
+    cancelEditAkt();
+  } else {
+    const rec = { id: 'a' + Date.now(), company, from, to, date, what, comment, synced: false };
+    AKT_DB.unshift(rec);
+    saveAktDB();
+    renderAktRecords();
+    toast('Запись добавлена', 'ok');
+    syncAktRecord(rec.id);
+  }
+
+  document.getElementById('akt-what').value = '';
+  document.getElementById('akt-comment').value = '';
+}
+
+function editAktRecord(id) {
+  const r = AKT_DB.find(x => x.id === id);
+  if (!r) return;
+  editingAktId = id;
+  document.getElementById('co-name').value = r.company;
+  document.getElementById('from-name').value = r.from;
+  document.getElementById('to-name').value = r.to;
+  document.getElementById('akt-date').value = r.date;
+  document.getElementById('akt-what').value = r.what;
+  document.getElementById('akt-comment').value = r.comment;
+  upPreview();
+  document.getElementById('akt-submit-btn').textContent = '💾 Сохранить изменения';
+  document.getElementById('akt-cancel-btn').style.display = '';
+  toast('Измените поля и нажмите «Сохранить изменения»', 'ok');
+}
+
+function cancelEditAkt() {
+  editingAktId = null;
+  document.getElementById('akt-submit-btn').textContent = '📤 Отправить запись в Google Таблицу';
+  document.getElementById('akt-cancel-btn').style.display = 'none';
+}
+
+function delAktRecord(id) {
+  const r = AKT_DB.find(x => x.id === id);
+  if (!r) return;
+  if (!confirm(`Удалить запись "${r.company}"? В самой Google Таблице строку нужно будет удалить вручную.`)) return;
+  if (editingAktId === id) cancelEditAkt();
+  AKT_DB = AKT_DB.filter(x => x.id !== id);
+  saveAktDB();
+  renderAktRecords();
+  toast('Запись удалена локально', 'ok');
+}
+
+function renderAktRecords() {
+  document.getElementById('akt-records-count').textContent = AKT_DB.length + (AKT_DB.length % 10 === 1 && AKT_DB.length % 100 !== 11 ? ' запись' : ' записей');
+  const thead = document.querySelector('#akt-table thead');
+  const tbody = document.querySelector('#akt-table tbody');
+  thead.innerHTML = `<tr>
+    <th>Компания</th><th>Передал</th><th>Принял</th><th>Дата</th><th>Что передано</th><th>Комментарий</th><th>Синхр.</th><th></th>
+  </tr>`;
+  if (!AKT_DB.length) {
+    tbody.innerHTML = `<tr><td colspan="8"><div class="vempty">Записей пока нет — заполните форму выше и нажмите «Отправить»</div></td></tr>`;
+    return;
+  }
+  tbody.innerHTML = AKT_DB.map(r => `<tr>
+      <td>${esc(r.company)}</td>
+      <td>${esc(r.from)}</td>
+      <td>${esc(r.to)}</td>
+      <td>${esc(r.date)}</td>
+      <td>${esc(r.what)}</td>
+      <td>${esc(r.comment)}</td>
+      <td>${r.synced ? '<span class="synced">✅ в таблице</span>' : `<span class="notsynced" onclick="syncAktRecord('${r.id}')">⟳ повторить</span>`}</td>
+      <td style="white-space:nowrap"><button class="btn bg bsm" onclick="editAktRecord('${r.id}')" title="Редактировать">✏️</button> <button class="btn bd bsm" onclick="delAktRecord('${r.id}')" title="Удалить">🗑️</button></td>
+    </tr>`).join('');
+}
+
+async function syncAktRecord(id) {
+  const url = (document.getElementById('akt-hook').value || '').trim();
+  const secret = (document.getElementById('akt-secret').value || '').trim();
+  const rec = AKT_DB.find(x => x.id === id);
+  if (!rec) return;
+  if (!url) { toast('Сначала укажите URL Apps Script веб-приложения', 'err'); return; }
+  try {
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({
+        secret,
+        sheet: 'Акт',
+        company: rec.company, fromWhom: rec.from, toWhom: rec.to,
+        date: rec.date, what: rec.what, comment: rec.comment
+      })
+    });
+    const data = await res.json().catch(() => null);
+    if (res.ok && data && data.ok) {
+      rec.synced = true;
+      saveAktDB();
+      renderAktRecords();
+      updateAktConnDot('ok');
+      toast('Запись отправлена в Google Таблицу', 'ok');
+    } else {
+      updateAktConnDot('bad');
+      toast('Не удалось записать в таблицу: ' + (data && data.error ? data.error : 'см. деплой скрипта'), 'err');
+    }
+  } catch(e) {
+    updateAktConnDot('bad');
+    toast('Ошибка сети при отправке в таблицу. Запись сохранена локально.', 'err');
+  }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('akt-date').value = today();
+  loadHeaderFields();
+  loadItemsFromStorage();
+  renderItems();
+  loadAktHook();
+  loadAktDB();
+  renderAktRecords();
+});
+</script>
+</body>
+</html>

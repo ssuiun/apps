@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Marginalia</title>
+<style>
+  :root{
+    --bg:#eef1ea;
+    --surface:#ffffff;
+    --surface-2:#f5f7f1;
+    --ink:#1f2a22;
+    --muted:#66705f;
+    --faint:#97a08c;
+    --accent:#3c6e52;
+    --accent-ink:#ffffff;
+    --accent-2:#c97a2e;
+    --border:#dbe1d1;
+    --border-strong:#c3cdb4;
+    --danger:#b4483c;
+    --danger-bg:#f7e6e2;
+    --warn:#a8720f;
+    --warn-bg:#f6ecd6;
+    --shadow: 0 1px 2px rgba(31,42,34,.04), 0 8px 24px -12px rgba(31,42,34,.18);
+    --radius: 14px;
+    --radius-sm: 9px;
+
+    --status-todo-bg:#e8ebe1; --status-todo-fg:#5b6552;
+    --status-progress-bg:#fbe8d2; --status-progress-fg:#8a5518;
+    --status-done-bg:#dcefe2; --status-done-fg:#276845;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#12160f;
+      --surface:#1a2018;
+      --surface-2:#20271c;
+      --ink:#eaf0e4;
+      --muted:#9fac93;
+      --faint:#5c6a53;
+      --accent:#74c096;
+      --accent-ink:#0e1a12;
+      --accent-2:#e8a75f;
+      --border:#2b3527;
+      --border-strong:#3a4634;
+      --danger:#e08a7d;
+      --danger-bg:#3a231f;
+      --warn:#e0b060;
+      --warn-bg:#3a3020;
+      --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 28px -12px rgba(0,0,0,.55);
+
+      --status-todo-bg:#242c20; --status-todo-fg:#adb89e;
+      --status-progress-bg:#3a3020; --status-progress-fg:#e0b060;
+      --status-done-bg:#1c3327; --status-done-fg:#7fd3a3;
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#12160f;
+    --surface:#1a2018;
+    --surface-2:#20271c;
+    --ink:#eaf0e4;
+    --muted:#9fac93;
+    --faint:#5c6a53;
+    --accent:#74c096;
+    --accent-ink:#0e1a12;
+    --accent-2:#e8a75f;
+    --border:#2b3527;
+    --border-strong:#3a4634;
+    --danger:#e08a7d;
+    --danger-bg:#3a231f;
+    --warn:#e0b060;
+    --warn-bg:#3a3020;
+    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 28px -12px rgba(0,0,0,.55);
+
+    --status-todo-bg:#242c20; --status-todo-fg:#adb89e;
+    --status-progress-bg:#3a3020; --status-progress-fg:#e0b060;
+    --status-done-bg:#1c3327; --status-done-fg:#7fd3a3;
+  }
+
+  *,*::before,*::after{box-sizing:border-box}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'Work Sans',-apple-system,BlinkMacSystemFont,sans-serif;
+    padding-inline:20px;
+    padding-block:40px;
+    min-height:100%;
+  }
+  .wrap{max-width:920px;margin:0 auto}
+
+  header{margin-bottom:26px}
+  .eyebrow{
+    font-family:'JetBrains Mono','SFMono-Regular',monospace;
+    font-size:11px;
+    letter-spacing:.12em;
+    text-transform:uppercase;
+    color:var(--accent);
+    display:flex;
+    align-items:center;
+    gap:8px;
+    margin-bottom:6px;
+  }
+  .eyebrow .dot{width:6px;height:6px;border-radius:50%;background:var(--accent)}
+  h1{
+    font-family:'Fraunces',Georgia,serif;
+    font-optical-sizing:auto;
+    font-weight:600;
+    font-style:italic;
+    font-size:clamp(30px,6vw,40px);
+    line-height:1.05;
+    letter-spacing:-.01em;
+    margin:0 0 6px;
+    text-wrap:balance;
+  }
+  .sub{color:var(--muted);font-size:14.5px;max-width:52ch;line-height:1.5}
+
+  .toolbar{
+    display:flex;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:14px;
+    margin-top:20px;
+  }
+  .ring{position:relative;width:36px;height:36px;flex:none}
+  .ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+  .ring circle{fill:none;stroke-width:4}
+  .ring .track{stroke:var(--border)}
+  .ring .fill{stroke:var(--accent);stroke-linecap:round;transition:stroke-dashoffset .5s cubic-bezier(.65,0,.35,1)}
+  .stat-text{font-size:13px;color:var(--muted)}
+  .stat-text b{color:var(--ink);font-weight:600;font-variant-numeric:tabular-nums}
+  .stat-group{display:flex;align-items:center;gap:10px}
+
+  .tabs{display:flex;align-items:center;gap:4px;flex-wrap:wrap}
+  .tab{
+    background:transparent;border:none;padding:6px 12px;border-radius:999px;
+    font-size:13px;font-weight:600;color:var(--muted);font:inherit;cursor:pointer;
+  }
+  .tab[aria-selected="true"]{background:var(--surface);color:var(--ink);box-shadow:var(--shadow)}
+  .tab:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible{
+    outline:2px solid var(--accent);outline-offset:2px;
+  }
+
+  .toolbar-spacer{flex:1}
+  .clear-btn{
+    background:none;border:none;color:var(--muted);font-size:12.5px;font:inherit;cursor:pointer;
+    text-decoration:underline;text-underline-offset:2px;padding:6px 4px;
+  }
+  .clear-btn:hover{color:var(--danger)}
+  .clear-btn:disabled{opacity:.4;text-decoration:none;cursor:default}
+
+  .table-card{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    box-shadow:var(--shadow);
+    overflow-x:auto;
+  }
+  table{width:100%;border-collapse:collapse;min-width:640px}
+  caption{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+  thead th{
+    text-align:left;
+    font-size:11.5px;
+    font-weight:600;
+    text-transform:uppercase;
+    letter-spacing:.06em;
+    color:var(--muted);
+    padding:13px 14px;
+    border-bottom:1px solid var(--border);
+    white-space:nowrap;
+  }
+  th.col-task{width:34%}
+  th.col-comment{width:30%}
+  th.col-status{width:16%}
+  th.col-deadline{width:14%}
+  th.col-actions{width:40px}
+
+  tbody tr{border-bottom:1px solid var(--border)}
+  tbody tr:last-child{border-bottom:none}
+  tbody tr:hover{background:var(--surface-2)}
+  tbody tr.is-done .task-input{color:var(--faint);text-decoration:line-through;text-decoration-color:var(--border-strong)}
+  td{padding:9px 14px;vertical-align:middle}
+
+  .cell-input, .cell-textarea{
+    width:100%;
+    border:1px solid transparent;
+    background:transparent;
+    color:var(--ink);
+    font:inherit;
+    font-size:14px;
+    border-radius:7px;
+    padding:6px 8px;
+    margin:-6px -8px;
+    line-height:1.4;
+  }
+  .cell-textarea{resize:none;overflow:hidden;min-height:32px;font-size:13.5px;color:var(--muted)}
+  .cell-input:hover, .cell-textarea:hover{border-color:var(--border)}
+  .cell-input:focus, .cell-textarea:focus{
+    outline:none;border-color:var(--accent);background:var(--surface-2);
+  }
+  .cell-input::placeholder, .cell-textarea::placeholder{color:var(--faint)}
+
+  select.status-select{
+    appearance:none;-webkit-appearance:none;
+    border:1px solid transparent;
+    border-radius:999px;
+    font:inherit;
+    font-size:12.5px;
+    font-weight:600;
+    padding:6px 26px 6px 12px;
+    cursor:pointer;
+    background-repeat:no-repeat;
+    background-position:right 9px center;
+    background-size:10px;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%23888' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  }
+  select.status-select:hover{border-color:var(--border-strong)}
+  select[data-status="todo"]{background-color:var(--status-todo-bg);color:var(--status-todo-fg)}
+  select[data-status="progress"]{background-color:var(--status-progress-bg);color:var(--status-progress-fg)}
+  select[data-status="done"]{background-color:var(--status-done-bg);color:var(--status-done-fg)}
+
+  .deadline-wrap{display:flex;align-items:center;gap:6px}
+  input.deadline-input{
+    border:1px solid var(--border);
+    background:var(--surface-2);
+    color:var(--ink);
+    border-radius:7px;
+    padding:6px 8px;
+    font:inherit;
+    font-size:12.5px;
+    font-variant-numeric:tabular-nums;
+    width:100%;
+    color-scheme: light dark;
+  }
+  input.deadline-input:hover{border-color:var(--border-strong)}
+  .deadline-flag{font-size:10.5px;font-weight:700;padding:2px 6px;border-radius:5px;white-space:nowrap}
+  .deadline-flag.overdue{background:var(--danger-bg);color:var(--danger)}
+  .deadline-flag.today{background:var(--warn-bg);color:var(--warn)}
+
+  .del{
+    background:none;border:none;color:var(--faint);cursor:pointer;
+    padding:6px;border-radius:6px;flex:none;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .del:hover{color:var(--danger);background:var(--danger-bg)}
+  .del svg{width:15px;height:15px}
+
+  .add-btn{
+    background:var(--accent);color:var(--accent-ink);border:none;cursor:pointer;
+    width:26px;height:26px;border-radius:8px;flex:none;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .add-btn:hover{filter:brightness(1.08)}
+  .add-btn svg{width:15px;height:15px}
+
+  .add-row td{padding-top:11px;padding-bottom:11px}
+  .add-row{background:var(--surface-2)}
+  .add-icon{color:var(--accent);font-weight:700;font-size:15px;display:inline-flex;width:16px;justify-content:center}
+  .add-task-input::placeholder{color:var(--muted)}
+
+  .empty-row td{padding:44px 14px;text-align:center;color:var(--muted)}
+  .empty-row .glyph{font-family:'Fraunces',serif;font-style:italic;font-size:22px;color:var(--faint);display:block;margin-bottom:4px}
+
+  footer{margin-top:22px;text-align:center;font-size:12px;color:var(--faint)}
+
+  @media (max-width:700px){
+    body{padding-inline:14px}
+    th.col-comment{width:26%}
+  }
+</style>
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;1,9..144,600&family=Work+Sans:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap">
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="eyebrow"><span class="dot"></span>личный список дел</div>
+    <h1>Marginalia</h1>
+    <p class="sub">Таблица задач со статусом и дедлайном — комментарий к каждой задаче можно менять когда угодно.</p>
+
+    <div class="toolbar">
+      <div class="stat-group">
+        <div class="ring">
+          <svg viewBox="0 0 40 40">
+            <circle class="track" cx="20" cy="20" r="16"/>
+            <circle class="fill" id="ringFill" cx="20" cy="20" r="16" stroke-dasharray="100.5" stroke-dashoffset="100.5"/>
+          </svg>
+        </div>
+        <div class="stat-text"><b id="doneCount">0</b> из <b id="totalCount">0</b> готово</div>
+      </div>
+
+      <div class="tabs" role="tablist" aria-label="Фильтр по статусу">
+        <button class="tab" role="tab" aria-selected="true" data-filter="all">Все</button>
+        <button class="tab" role="tab" aria-selected="false" data-filter="todo">К выполнению</button>
+        <button class="tab" role="tab" aria-selected="false" data-filter="progress">В процессе</button>
+        <button class="tab" role="tab" aria-selected="false" data-filter="done">Готово</button>
+      </div>
+
+      <div class="toolbar-spacer"></div>
+      <button class="clear-btn" id="clearDoneBtn">Очистить готовые</button>
+    </div>
+  </header>
+
+  <div class="table-card">
+    <table>
+      <caption>Список задач с комментарием, статусом и дедлайном</caption>
+      <thead>
+        <tr>
+          <th class="col-task" scope="col">Задача</th>
+          <th class="col-comment" scope="col">Комментарий</th>
+          <th class="col-status" scope="col">Статус</th>
+          <th class="col-deadline" scope="col">Дедлайн</th>
+          <th class="col-actions" scope="col"><span style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Действия</span></th>
+        </tr>
+      </thead>
+      <tbody id="tbody"></tbody>
+    </table>
+  </div>
+
+  <footer>Данные хранятся локально в этом браузере</footer>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  var STORAGE_KEY = "marginalia_tasks_v2";
+  var LEGACY_KEY = "marginalia_tasks_v1";
+  var STATUSES = {
+    todo:     { label: "К выполнению" },
+    progress: { label: "В процессе" },
+    done:     { label: "Готово" }
+  };
+
+  var state = { filter: "all", tasks: [] };
+
+  function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,8); }
+
+  function seedTasks(){
+    var now = Date.now();
+    var todayISO = new Date().toISOString().slice(0,10);
+    var soon = new Date(Date.now() + 1000*60*60*24*3).toISOString().slice(0,10);
+    var past = new Date(Date.now() - 1000*60*60*24*2).toISOString().slice(0,10);
+    return [
+      {
+        id: uid(),
+        text: "Подготовить материалы к встрече",
+        comment: "Взять черновик презентации и распечатать повестку.",
+        status: "progress",
+        deadline: todayISO,
+        createdAt: now - 1000*60*60*5
+      },
+      {
+        id: uid(),
+        text: "Ответить на письма клиентов",
+        comment: "",
+        status: "todo",
+        deadline: soon,
+        createdAt: now - 1000*60*60*3
+      },
+      {
+        id: uid(),
+        text: "Оплатить подписку на хостинг",
+        comment: "Оплачено картой, чек пришёл на почту.",
+        status: "done",
+        deadline: past,
+        createdAt: now - 1000*60*60*20
+      }
+    ];
+  }
+
+  function migrateLegacy(){
+    try{
+      var raw = localStorage.getItem(LEGACY_KEY);
+      if(!raw) return null;
+      var parsed = JSON.parse(raw);
+      if(!Array.isArray(parsed)) return null;
+      return parsed.map(function(t){
+        return {
+          id: t.id || uid(),
+          text: t.text || "",
+          comment: t.comment || "",
+          status: t.done ? "done" : "todo",
+          deadline: "",
+          createdAt: t.createdAt || Date.now()
+        };
+      });
+    }catch(e){ return null; }
+  }
+
+  function load(){
+    try{
+      var raw = localStorage.getItem(STORAGE_KEY);
+      if(raw){
+        var parsed = JSON.parse(raw);
+        if(Array.isArray(parsed)) return parsed;
+      }
+    }catch(e){}
+    var migrated = migrateLegacy();
+    if(migrated) return migrated;
+    return seedTasks();
+  }
+
+  function save(){
+    try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(state.tasks)); }catch(e){}
+  }
+
+  function esc(s){
+    return String(s == null ? "" : s)
+      .replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+  }
+
+  function todayISO(){ return new Date().toISOString().slice(0,10); }
+
+  function trashIcon(){
+    return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16"/><path d="M9 7V4.5A1.5 1.5 0 0 1 10.5 3h3A1.5 1.5 0 0 1 15 4.5V7"/><path d="M6 7l1 13.5A1.5 1.5 0 0 0 8.5 22h7a1.5 1.5 0 0 0 1.5-1.5L18 7"/><path d="M10 11v6M14 11v6"/></svg>';
+  }
+
+  function plusIcon(){
+    return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>';
+  }
+
+  function findTask(id){
+    for(var i=0;i<state.tasks.length;i++) if(state.tasks[i].id === id) return state.tasks[i];
+    return null;
+  }
+
+  function filteredSortedTasks(){
+    var items = state.filter === "all" ? state.tasks.slice() : state.tasks.filter(function(t){ return t.status === state.filter; });
+    items.sort(function(a,b){
+      if(a.deadline && b.deadline){
+        if(a.deadline !== b.deadline) return a.deadline < b.deadline ? -1 : 1;
+      } else if(a.deadline && !b.deadline){
+        return -1;
+      } else if(!a.deadline && b.deadline){
+        return 1;
+      }
+      return b.createdAt - a.createdAt;
+    });
+    return items;
+  }
+
+  function render(){
+    var tbody = document.getElementById("tbody");
+    var total = state.tasks.length;
+    var doneN = state.tasks.filter(function(t){ return t.status === "done"; }).length;
+
+    document.getElementById("totalCount").textContent = total;
+    document.getElementById("doneCount").textContent = doneN;
+    var pct = total ? doneN / total : 0;
+    document.getElementById("ringFill").style.strokeDashoffset = String(100.5 * (1 - pct));
+    document.getElementById("clearDoneBtn").disabled = doneN === 0;
+
+    var items = filteredSortedTasks();
+    var rows = items.map(renderRow).join("");
+
+    if(items.length === 0){
+      var msg = state.filter === "done" ? "Пока ничего не выполнено" :
+                state.filter === "progress" ? "Нет задач в процессе" :
+                state.filter === "todo" ? "Нет задач к выполнению" :
+                "Добавьте первую задачу ниже";
+      rows = '<tr class="empty-row"><td colspan="5"><span class="glyph">пусто</span>' + esc(msg) + '</td></tr>';
+    }
+
+    tbody.innerHTML = rows + renderAddRow();
+    wireRowEvents();
+    autosizeAllComments();
+  }
+
+  function deadlineFlag(t){
+    if(!t.deadline || t.status === "done") return "";
+    var d = t.deadline;
+    var today = todayISO();
+    if(d < today) return '<span class="deadline-flag overdue">просрочено</span>';
+    if(d === today) return '<span class="deadline-flag today">сегодня</span>';
+    return "";
+  }
+
+  function statusOptions(current){
+    return Object.keys(STATUSES).map(function(key){
+      return '<option value="' + key + '"' + (key === current ? " selected" : "") + '>' + STATUSES[key].label + '</option>';
+    }).join("");
+  }
+
+  function renderRow(t){
+    return (
+      '<tr class="' + (t.status === "done" ? "is-done" : "") + '" data-row="' + t.id + '">' +
+        '<td><input class="cell-input task-input" data-field="text" data-id="' + t.id + '" value="' + esc(t.text) + '" placeholder="Задача" aria-label="Название задачи"></td>' +
+        '<td><textarea class="cell-textarea" data-field="comment" data-id="' + t.id + '" placeholder="Добавить комментарий…" rows="1" aria-label="Комментарий к задаче">' + esc(t.comment) + '</textarea></td>' +
+        '<td>' +
+          '<select class="status-select" data-field="status" data-id="' + t.id + '" data-status="' + t.status + '" aria-label="Статус задачи">' +
+            statusOptions(t.status) +
+          '</select>' +
+        '</td>' +
+        '<td>' +
+          '<div class="deadline-wrap">' +
+            '<input type="date" class="deadline-input" data-field="deadline" data-id="' + t.id + '" value="' + esc(t.deadline || "") + '" aria-label="Дедлайн задачи">' +
+          '</div>' +
+          deadlineFlag(t) +
+        '</td>' +
+        '<td><button class="del" data-delete="' + t.id + '" aria-label="Удалить задачу ' + esc(t.text) + '">' + trashIcon() + '</button></td>' +
+      '</tr>'
+    );
+  }
+
+  function renderAddRow(){
+    return (
+      '<tr class="add-row">' +
+        '<td><span class="add-icon">+</span> <input class="cell-input add-task-input" id="newTaskInput" placeholder="Новая задача…" aria-label="Новая задача" maxlength="200" style="width:calc(100% - 22px);display:inline-block"></td>' +
+        '<td><input class="cell-input" id="newCommentInput" placeholder="Комментарий (необязательно)" aria-label="Комментарий к новой задаче"></td>' +
+        '<td>' +
+          '<select class="status-select" id="newStatusInput" data-status="todo" aria-label="Статус новой задачи">' +
+            statusOptions("todo") +
+          '</select>' +
+        '</td>' +
+        '<td><input type="date" class="deadline-input" id="newDeadlineInput" aria-label="Дедлайн новой задачи"></td>' +
+        '<td><button class="add-btn" id="addTaskBtn" aria-label="Добавить задачу" title="Добавить задачу">' + plusIcon() + '</button></td>' +
+      '</tr>'
+    );
+  }
+
+  function addTask(){
+    var textEl = document.getElementById("newTaskInput");
+    var text = textEl.value.trim();
+    if(!text){ textEl.focus(); return; }
+    var comment = document.getElementById("newCommentInput").value.trim();
+    var status = document.getElementById("newStatusInput").value;
+    var deadline = document.getElementById("newDeadlineInput").value;
+
+    state.tasks.unshift({ id: uid(), text: text, comment: comment, status: status, deadline: deadline, createdAt: Date.now() });
+    save();
+    render();
+    var input = document.getElementById("newTaskInput");
+    if(input) input.focus();
+  }
+
+  function updateField(id, field, value){
+    var t = findTask(id);
+    if(!t) return;
+    t[field] = value;
+    save();
+  }
+
+  function deleteTask(id){
+    state.tasks = state.tasks.filter(function(t){ return t.id !== id; });
+    save();
+    render();
+  }
+
+  function clearDone(){
+    state.tasks = state.tasks.filter(function(t){ return t.status !== "done"; });
+    save();
+    render();
+  }
+
+  function autosizeComment(el){
+    el.style.height = "auto";
+    el.style.height = (el.scrollHeight) + "px";
+  }
+  function autosizeAllComments(){
+    document.querySelectorAll(".cell-textarea").forEach(autosizeComment);
+  }
+
+  function wireRowEvents(){
+    var tbody = document.getElementById("tbody");
+
+    tbody.querySelectorAll('[data-field="text"]').forEach(function(el){
+      el.addEventListener("change", function(){ updateField(el.getAttribute("data-id"), "text", el.value.trim()); });
+      el.addEventListener("keydown", function(ev){ if(ev.key === "Enter") el.blur(); });
+    });
+
+    tbody.querySelectorAll('[data-field="comment"]').forEach(function(el){
+      autosizeComment(el);
+      el.addEventListener("input", function(){ autosizeComment(el); });
+      el.addEventListener("change", function(){ updateField(el.getAttribute("data-id"), "comment", el.value.trim()); });
+    });
+
+    tbody.querySelectorAll('[data-field="status"]').forEach(function(el){
+      el.addEventListener("change", function(){
+        el.setAttribute("data-status", el.value);
+        updateField(el.getAttribute("data-id"), "status", el.value);
+        render();
+      });
+    });
+
+    tbody.querySelectorAll('[data-field="deadline"]').forEach(function(el){
+      el.addEventListener("change", function(){
+        updateField(el.getAttribute("data-id"), "deadline", el.value);
+        render();
+      });
+    });
+
+    tbody.querySelectorAll("[data-delete]").forEach(function(el){
+      el.addEventListener("click", function(){ deleteTask(el.getAttribute("data-delete")); });
+    });
+
+    var newTaskInput = document.getElementById("newTaskInput");
+    if(newTaskInput){
+      newTaskInput.addEventListener("keydown", function(ev){
+        if(ev.key === "Enter"){ ev.preventDefault(); addTask(); }
+      });
+    }
+    var addBtn = document.getElementById("addTaskBtn");
+    if(addBtn){ addBtn.addEventListener("click", addTask); }
+  }
+
+  function wireStaticEvents(){
+    document.querySelectorAll(".tab").forEach(function(tab){
+      tab.addEventListener("click", function(){
+        document.querySelectorAll(".tab").forEach(function(t){ t.setAttribute("aria-selected","false"); });
+        tab.setAttribute("aria-selected","true");
+        state.filter = tab.getAttribute("data-filter");
+        render();
+      });
+    });
+    document.getElementById("clearDoneBtn").addEventListener("click", clearDone);
+  }
+
+  function start(){
+    state.tasks = load();
+    wireStaticEvents();
+    render();
+  }
+
+  if(document.readyState === "loading"){
+    document.addEventListener("DOMContentLoaded", start);
+  } else {
+    start();
+  }
+})();
+</script>
+</body>
+</html>
