@@ -319,7 +319,7 @@
     </table>
   </div>
 
-  <footer>Данные хранятся локально в этом браузере</footer>
+  <footer>Данные хранятся в общей базе данных</footer>
 </div>
 
 <script>
@@ -390,21 +390,51 @@
     }catch(e){ return null; }
   }
 
-  function load(){
+  async function load(){
+    // Primary storage: PostgreSQL through the Railway API.
     try{
-      var raw = localStorage.getItem(STORAGE_KEY);
-      if(raw){
-        var parsed = JSON.parse(raw);
-        if(Array.isArray(parsed)) return parsed;
+      var response = await fetch("/api/storage?keys=" + encodeURIComponent(STORAGE_KEY), {
+        cache: "no-store"
+      });
+      if(response.ok){
+        var data = await response.json();
+        if(data && typeof data[STORAGE_KEY] === "string"){
+          var parsed = JSON.parse(data[STORAGE_KEY]);
+          if(Array.isArray(parsed)) return parsed;
+        }
       }
-    }catch(e){}
+    }catch(e){
+      console.warn("Не удалось загрузить задачи из базы данных:", e);
+    }
+
+    // One-time migration from the old browser storage.
     var migrated = migrateLegacy();
-    if(migrated) return migrated;
-    return seedTasks();
+    if(migrated){
+      try{ await saveTasks(migrated); }catch(e){}
+      return migrated;
+    }
+
+    var seeded = seedTasks();
+    try{ await saveTasks(seeded); }catch(e){}
+    return seeded;
+  }
+
+  async function saveTasks(tasks){
+    var response = await fetch("/api/storage", {
+      method: "POST",
+      headers: {"Content-Type":"application/json"},
+      body: JSON.stringify({
+        key: STORAGE_KEY,
+        value: JSON.stringify(tasks)
+      })
+    });
+    if(!response.ok) throw new Error("Database save failed: " + response.status);
   }
 
   function save(){
-    try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(state.tasks)); }catch(e){}
+    saveTasks(state.tasks).catch(function(e){
+      console.error("Не удалось сохранить задачи в базе данных:", e);
+    });
   }
 
   function esc(s){
@@ -618,8 +648,8 @@
     document.getElementById("clearDoneBtn").addEventListener("click", clearDone);
   }
 
-  function start(){
-    state.tasks = load();
+  async function start(){
+    state.tasks = await load();
     wireStaticEvents();
     render();
   }

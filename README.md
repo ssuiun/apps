@@ -1,22 +1,24 @@
 # SUKAAA — Railway + PostgreSQL
 
-Проект подготовлен для Railway с одной общей PostgreSQL-базой.
+## Marginalia
 
-## Что внутри
-- `server.js` — Node.js сервер + API + PostgreSQL
-- `railway-sync.js` — синхронизация выбранных данных страниц с PostgreSQL
-- `index.html`, `visa.html`, `kadr.html`, `akt.html`, `marginalia.html`
-- `package.json` — запуск и зависимость `pg`
+`marginalia.html` теперь хранит список дел в PostgreSQL через API:
 
-## Настройка в Railway
-1. Задеплой этот проект.
-2. В том же Railway Project добавь **PostgreSQL**: `New` → `Database` → `Add PostgreSQL`.
-3. Убедись, что переменная `DATABASE_URL` доступна сервису `SUKAAA`. Если Railway не добавил её автоматически, в Variables создай ссылку на `Postgres.DATABASE_URL`.
-4. Сделай Redeploy `SUKAAA`.
-5. В Deploy Logs должны появиться строки:
-   - `PostgreSQL connected and app_storage is ready.`
-   - `Server listening on http://0.0.0.0:PORT`
-6. В Settings → Networking укажи публичный домен на тот порт, который использует Railway.
+- `GET /api/storage?keys=marginalia_tasks_v2`
+- `POST /api/storage`
 
-## Важно
-Сейчас это единое общее хранилище без авторизации: любой человек, у кого есть URL сайта, потенциально сможет обращаться к API хранения. Для реальной многопользовательской системы следующим шагом нужно добавить пользователей/авторизацию и разделение данных по аккаунтам.
+Ключ `marginalia_tasks_v2` содержит JSON-массив задач.
+
+При первом открытии Marginalia:
+1. существующие задачи из PostgreSQL загружаются;
+2. если остались старые задачи в localStorage — они один раз переносятся в PostgreSQL;
+3. если данных нет — создаются стартовые задачи и сохраняются в PostgreSQL.
+
+## Railway
+
+1. Добавь в проект PostgreSQL через **New → Database → Add PostgreSQL**.
+2. Подключи PostgreSQL к `SUKAAA`, чтобы сервис получил `DATABASE_URL`.
+3. Сделай Redeploy.
+4. Не задавай порт вручную: сервер использует `process.env.PORT`.
+
+`/health` возвращает состояние приложения.
